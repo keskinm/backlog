@@ -2,7 +2,7 @@ import os
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-
+from pymongo import MongoClient
 
 app = Flask(__name__)
 CORS(app)
@@ -21,6 +21,13 @@ def get_stuff():
     print('data from client:', input_json)
     dictToReturn = {'answer':str(42)}
     return jsonify(dictToReturn)
+
+@app.route('/api/get_backlog', methods=['GET'])
+def get_backlog():
+    client = MongoClient(port=27017)
+    db = client.backlog_db
+
+    return jsonify(db.epics)
 
 app.secret_key = os.urandom(12)
 

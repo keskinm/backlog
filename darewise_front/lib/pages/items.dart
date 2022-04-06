@@ -2,13 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:darewise_front/dio.dart';
 import 'package:dio/dio.dart';
 
-
-Future<String> justAPost(
+Future<String> justAGet(
     {required String aString}) async {
-  String body = '{"aString": "$aString"}';
-  Response response = await dioHttpPost(
-    route: 'get_stuff',
-    jsonData: body,
+  Response response = await dioHttpGet(
+    route: 'get_backlog',
     token: false,
   );
   print(response.data);
@@ -16,116 +13,82 @@ Future<String> justAPost(
 }
 
 
-
-
-// void main() => runApp(const MyApp());
-//
-// class MyApp extends StatelessWidget {
-//   const MyApp({Key? key}) : super(key: key);
-//
-//   static const String _title = 'Flutter Code Sample';
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return const MaterialApp(
-//       title: _title,
-//       home: Items(),
-//     );
-//   }
-// }
-
-class Items extends StatefulWidget {
+class Items extends StatelessWidget {
   const Items({Key? key}) : super(key: key);
 
   @override
-  State<Items> createState() => _ItemsState();
-}
-
-class _ItemsState extends State<Items> {
-  // final Future<String> _calculation = Future<String>.delayed(
-  //   const Duration(seconds: 2),
-  //       () => 'Data Loaded',
-  // );
-
-  final Future<String> _calculation = justAPost(aString: "foo");
-
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    final List<ListItem> items = List<ListItem>.generate(
+      1000,
+          (i) => i % 6 == 0
+          ? HeadingItem('Heading $i')
+          : MessageItem('Sender $i', 'Message body $i'),
+    );
 
-      body: Container(
-          alignment: Alignment.center,
-          child: Column(
-            children: [
+    const title = 'Mixed List';
 
-              DefaultTextStyle(
-                style: Theme.of(context).textTheme.headline2!,
-                textAlign: TextAlign.center,
-                child: FutureBuilder<String>(
-                  future: _calculation, // a previously-obtained Future<String> or null
-                  builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-                    List<Widget> children;
-                    if (snapshot.hasData) {
-                      children = <Widget>[
-                        const Icon(
-                          Icons.check_circle_outline,
-                          color: Colors.green,
-                          size: 60,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Text('Result: ${snapshot.data}'),
-                        )
-                      ];
-                    } else if (snapshot.hasError) {
-                      children = <Widget>[
-                        const Icon(
-                          Icons.error_outline,
-                          color: Colors.red,
-                          size: 60,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 16),
-                          child: Text('Error: ${snapshot.error}'),
-                        )
-                      ];
-                    } else {
-                      children = const <Widget>[
-                        SizedBox(
-                          width: 60,
-                          height: 60,
-                          child: CircularProgressIndicator(),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.only(top: 16),
-                          child: Text('Awaiting result...'),
-                        )
-                      ];
-                    }
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: children,
-                      ),
-                    );
-                  },
-                ),
-              ),
+    return MaterialApp(
+      title: title,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text(title),
+        ),
+        body: ListView.builder(
+          // Let the ListView know how many items it needs to build.
+          itemCount: items.length,
+          // Provide a builder function. This is where the magic happens.
+          // Convert each item into a widget based on the type of item it is.
+          itemBuilder: (context, index) {
+            final item = items[index];
 
-
-
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Go back!'),
-              ),
-
-            ],
-          )
-
+            return ListTile(
+              title: item.buildTitle(context),
+              subtitle: item.buildSubtitle(context),
+            );
+          },
+        ),
       ),
-
     );
   }
+}
+
+/// The base class for the different types of items the list can contain.
+abstract class ListItem {
+  /// The title line to show in a list item.
+  Widget buildTitle(BuildContext context);
+
+  /// The subtitle line, if any, to show in a list item.
+  Widget buildSubtitle(BuildContext context);
+}
+
+/// A ListItem that contains data to display a heading.
+class HeadingItem implements ListItem {
+  final String heading;
+
+  HeadingItem(this.heading);
+
+  @override
+  Widget buildTitle(BuildContext context) {
+    return Text(
+      heading,
+      style: Theme.of(context).textTheme.headline5,
+    );
+  }
+
+  @override
+  Widget buildSubtitle(BuildContext context) => const SizedBox.shrink();
+}
+
+/// A ListItem that contains data to display a message.
+class MessageItem implements ListItem {
+  final String sender;
+  final String body;
+
+  MessageItem(this.sender, this.body);
+
+  @override
+  Widget buildTitle(BuildContext context) => Text(sender);
+
+  @override
+  Widget buildSubtitle(BuildContext context) => Text(body);
 }

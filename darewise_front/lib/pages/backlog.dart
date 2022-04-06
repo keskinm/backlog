@@ -11,7 +11,8 @@ Future<String> justAPost(
     jsonData: body,
     token: false,
   );
-  return response.data;
+  print(response.data);
+  return response.data['answer'];
 }
 
 
@@ -41,12 +42,12 @@ class Backlogs extends StatefulWidget {
 }
 
 class _BacklogsState extends State<Backlogs> {
-  final Future<String> _calculation = Future<String>.delayed(
-    const Duration(seconds: 2),
-        () => 'Data Loaded',
-  );
+  // final Future<String> _calculation = Future<String>.delayed(
+  //   const Duration(seconds: 2),
+  //       () => 'Data Loaded',
+  // );
 
-  // final Future<String> _calculation = justAPost(aString: "foo");
+  final Future<String> _calculation = justAPost(aString: "foo");
 
   @override
   Widget build(BuildContext context) {

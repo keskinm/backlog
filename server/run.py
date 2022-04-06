@@ -3,7 +3,6 @@ import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
-print("\n\n\n\n-------------------------GO !---------------------------\n\n\n\n")
 
 app = Flask(__name__)
 CORS(app)
@@ -16,13 +15,11 @@ CORS(app)
 # def home():
 #     return "Home"
 
-@app.route('/api/', methods=['POST'])
+@app.route('/api/get_stuff', methods=['POST'])
 def get_stuff():
     input_json = request.get_json(force=True)
-    # force=True, above, is necessary if another developer
-    # forgot to set the MIME type to 'application/json'
     print('data from client:', input_json)
-    dictToReturn = {'answer':42}
+    dictToReturn = {'answer':str(42)}
     return jsonify(dictToReturn)
 
 app.secret_key = os.urandom(12)

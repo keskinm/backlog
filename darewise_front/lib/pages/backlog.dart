@@ -55,7 +55,7 @@ class _BacklogsState extends State<Backlogs> {
 
       body: Container(
         alignment: Alignment.center,
-        child: Stack(
+        child: Column(
           children: [
 
         DefaultTextStyle(

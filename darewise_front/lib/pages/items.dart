@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:darewise_front/dio.dart';
 import 'package:dio/dio.dart';
 
-Future<String> justAGet(
+Future<List> justAGet(
     {required String aString}) async {
   Response response = await dioHttpGet(
     route: 'get_backlog',
     token: false,
   );
-  print(response.data);
-  return response.data['answer'];
+  // print(response.data);
+  return response.data;
 }
 
 
@@ -18,35 +18,61 @@ class Items extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final List<ListItem> items = List<ListItem>.generate(
-      1000,
-          (i) => i % 6 == 0
-          ? HeadingItem('Heading $i')
-          : MessageItem('Sender $i', 'Message body $i'),
-    );
 
+    Future<List<dynamic>> items = justAGet(aString: '');
     const title = 'Mixed List';
 
     return MaterialApp(
       title: title,
       home: Scaffold(
-        appBar: AppBar(
-          title: const Text(title),
-        ),
-        body: ListView.builder(
-          // Let the ListView know how many items it needs to build.
-          itemCount: items.length,
-          // Provide a builder function. This is where the magic happens.
-          // Convert each item into a widget based on the type of item it is.
-          itemBuilder: (context, index) {
-            final item = items[index];
+          appBar: AppBar(
+            title: const Text(title),
+          ),
+          body: FutureBuilder<List<dynamic>>(
+          future: items,
+          builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
 
-            return ListTile(
-              title: item.buildTitle(context),
-              subtitle: item.buildSubtitle(context),
+          print("0");
+
+            return Scaffold(body:
+            ListView.builder(
+              // Let the ListView know how many items it needs to build.
+              itemCount: snapshot.data!.length,
+              // Provide a builder function. This is where the magic happens.
+              // Convert each item into a widget based on the type of item it is.
+
+              itemBuilder: (context, index) {
+                final rawEpic = snapshot.data![index];
+                EpicItem item = EpicItem(rawEpic['name'], rawEpic['description']);
+
+                return ListTile(
+                  title: item.buildTitle(context),
+                  subtitle: item.buildSubtitle(context),
+                );
+              },
+              ),
             );
+
           },
-        ),
+
+          // ListView.builder(
+          //   // Let the ListView know how many items it needs to build.
+          //   itemCount: items.length,
+          //   // Provide a builder function. This is where the magic happens.
+          //   // Convert each item into a widget based on the type of item it is.
+          //   itemBuilder: (context, index) {
+          //     final item = items[index];
+          //
+          //     return ListTile(
+          //       title: item.buildTitle(context),
+          //       subtitle: item.buildSubtitle(context),
+          //     );
+          //   },
+          // ),
+
+
+        )
+
       ),
     );
   }
@@ -61,34 +87,36 @@ abstract class ListItem {
   Widget buildSubtitle(BuildContext context);
 }
 
-/// A ListItem that contains data to display a heading.
-class HeadingItem implements ListItem {
-  final String heading;
-
-  HeadingItem(this.heading);
-
-  @override
-  Widget buildTitle(BuildContext context) {
-    return Text(
-      heading,
-      style: Theme.of(context).textTheme.headline5,
-    );
-  }
-
-  @override
-  Widget buildSubtitle(BuildContext context) => const SizedBox.shrink();
-}
+// /// A ListItem that contains data to display a heading.
+// class HeadingItem implements ListItem {
+//   final String heading;
+//
+//   HeadingItem(this.heading);
+//
+//   @override
+//   Widget buildTitle(BuildContext context) {
+//     return Text(
+//       heading,
+//       style: Theme.of(context).textTheme.headline5,
+//     );
+//   }
+//
+//   @override
+//   Widget buildSubtitle(BuildContext context) => const SizedBox.shrink();
+// }
 
 /// A ListItem that contains data to display a message.
-class MessageItem implements ListItem {
-  final String sender;
-  final String body;
-
-  MessageItem(this.sender, this.body);
+class EpicItem implements ListItem {
+  final String name;
+  final String description;
+  // final List<String> body;
+  // final List<String> body;
+  // final List<String> body;
+  EpicItem(this.name, this.description);
 
   @override
-  Widget buildTitle(BuildContext context) => Text(sender);
+  Widget buildTitle(BuildContext context) => Text(name);
 
   @override
-  Widget buildSubtitle(BuildContext context) => Text(body);
+  Widget buildSubtitle(BuildContext context) => Text(description);
 }

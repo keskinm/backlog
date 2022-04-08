@@ -1,3 +1,4 @@
+import 'package:darewise_front/pages/bugs_epics.dart';
 import 'package:darewise_front/pages/formatted_backlog.dart';
 import 'package:darewise_front/pages/backlog.dart';
 import 'package:darewise_front/pages/items.dart';
@@ -64,6 +65,16 @@ class FirstRoute extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const MergeBacklog()),
+                  );
+                },
+              ),
+
+              ElevatedButton(
+                child: const Text('Blocked epics by bugs'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const BugsEpics()),
                   );
                 },
               ),

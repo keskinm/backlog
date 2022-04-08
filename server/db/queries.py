@@ -143,3 +143,39 @@ def get_sub_tasks(epic, sub_tasks):
     for epic in epic["epics"]:
         sub_tasks += get_sub_tasks(epic, sub_tasks)
     return sub_tasks
+
+
+def get_bug_epics(bug):
+    client = MongoClient(port=27017)
+    db = client.backlog_db
+    epics_collection = db.epics
+
+    blocked_epics_non_higher = []
+    blocked_epics_higher = []
+
+    blocked_epics = epics_collection.find({'bugs.name': {'$all': [bug["name"]]}})
+    for blocked_epic in blocked_epics:
+        if not list(epics_collection.find({'epics': {'$all': [blocked_epic["name"]]}})):
+            blocked_epics_higher.append(blocked_epic["name"])
+        else:
+            blocked_epics_non_higher.append(blocked_epic["name"])
+
+    blocked_epics_higher = ', '.join(blocked_epics_higher)
+    blocked_epics_non_higher = ', '.join(blocked_epics_non_higher)
+
+    res = {'blocked_epics_higher': blocked_epics_higher, 'blocked_epics_non_higher': blocked_epics_non_higher}
+
+    return res
+
+
+def get_bugs_epics():
+    client = MongoClient(port=27017)
+    db = client.backlog_db
+    bugs_collection = db.bugs
+
+    res = []
+    cursor = bugs_collection.find({})
+    for document in cursor:
+        document["blocked_epics"] = get_bug_epics(document)
+        res.append(document)
+    return res

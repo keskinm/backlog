@@ -5,11 +5,13 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from bson.json_util import dumps
 
+from server.db.queries import get_status
+
 app = Flask(__name__)
 CORS(app)
 
 
-# app.add_url_rule('/', view_func=m.root)
+# app.add_url_rule('/', view_func=m.root, methods=['POST', 'GET'])
 
 
 # @app.route('/')
@@ -25,6 +27,7 @@ def get_stuff():
 
 @app.route('/api/get_backlog', methods=['GET'])
 def get_backlog():
+    status = get_status()
     r = []
     client = MongoClient(port=27017)
     db = client.backlog_db
@@ -32,6 +35,8 @@ def get_backlog():
     cursor = epics_collection.find({})
     for document in cursor:
         # r.append(dumps(document))
+        print(status[document["_id"]])
+        document["status"] = status[document["_id"]]
         r.append(document)
     return jsonify(r)
 

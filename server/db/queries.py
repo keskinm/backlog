@@ -1,43 +1,46 @@
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy import create_engine
-from server.db.tabledef import User
+from pymongo import MongoClient
+
+work_in_progress = "Work in progress"
+pending_validation = "Pending validation"
+complete = "Complete"
 
 
-class Queries:
-    def __init__(self, handling_class=User):
-        self.engine = create_engine('sqlite:///providers.db', echo=True)
-        self.session = sessionmaker(bind=self.engine)()
-        self.handling_class = handling_class
+def get_self_status(epic):
+    if epic["tasks"]:
+        res = work_in_progress
+    elif epic["bugs"]:
+        res = pending_validation
+    else:
+        res = complete
+    return res
 
-    def unique(self, column_name):
-        providers_table = self.session.query(User).filter()
-        zones = list(map(lambda x: getattr(x, column_name), list(providers_table)))
-        zones = list(dict.fromkeys(zones))
-        return zones
 
-    def aggregate_by_column(self, column_name, selection=None):
-        unique_column = self.unique(column_name)
+def get_rec_epics_status(epic, status):
+    status.append(get_self_status(epic))
 
-        aggregated = {}
-        for item in unique_column:
-            item_aggregated_list = list(self.session.query(User).filter(getattr(self.handling_class, column_name) == item))
-            if selection:
-                item_aggregated_list = list(map(lambda x: getattr(x, selection), item_aggregated_list))
-            aggregated.update({item: item_aggregated_list})
+    for in_epic in epic["epics"]:
+        status = get_rec_epics_status(in_epic, status)
 
-        return aggregated
+    return status
 
-    def check(self):
-        db_session = sessionmaker(bind=self.engine)()
-        user = db_session.query(User).filter()
-        d = (list(user))
-        d
 
-    def delete_by_column(self, column_name, value):
-        self.session.query(User).filter(getattr(self.handling_class, column_name) == value).delete()
-        self.session.commit()
+def get_epic_status(epic):
+    status = get_rec_epics_status(epic, [])
+    if work_in_progress in status:
+        res = work_in_progress
+    elif pending_validation in status:
+        res = pending_validation
+    else:
+        res = complete
+    return res
 
-q = Queries()
-# q.delete_by_column('zone', 'Foo')
-agg = q.aggregate_by_column('zone')
-print(agg)
+
+def get_status():
+    client = MongoClient(port=27017)
+    db = client.backlog_db
+    res = {}
+    epics_collection = db.epics
+    cursor = epics_collection.find({})
+    for document in cursor:
+        res.update({document["_id"]: get_epic_status(document)})
+    return res

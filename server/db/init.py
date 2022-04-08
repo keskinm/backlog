@@ -15,7 +15,7 @@ def create_database():
 
     epic_B = {'_id': str(uuid.uuid4()),
                          'name': 'B',
-                         'description': 'Epic A description',
+                         'description': 'Epic B description',
                          'epics': [],
                          'tasks': [task_B1, task_B2],
                          'bugs': [bug_B1]}
@@ -28,22 +28,22 @@ def create_database():
                          'bugs': []}
 
     epic_C = {'_id': str(uuid.uuid4()),
-                         'name': 'B',
-                         'description': 'Epic A description',
+                         'name': 'C',
+                         'description': 'Epic C description',
                          'epics': [],
                          'tasks': [],
                          'bugs': []}
 
     epic_D = {'_id': str(uuid.uuid4()),
-                         'name': 'B',
-                         'description': 'Epic A description',
+                         'name': 'D',
+                         'description': 'Epic D description',
                          'epics': [epic_C],
                          'tasks': [],
                          'bugs': []}
 
     epic_E = {'_id': str(uuid.uuid4()),
-                         'name': 'B',
-                         'description': 'Epic A description',
+                         'name': 'E',
+                         'description': 'Epic E description',
                          'epics': [],
                          'tasks': [],
                          'bugs': [bug_E1]}

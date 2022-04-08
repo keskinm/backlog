@@ -43,7 +43,7 @@ class Items extends StatelessWidget {
 
               itemBuilder: (context, index) {
                 final rawEpic = snapshot.data![index];
-                EpicItem item = EpicItem(rawEpic['name'], rawEpic['description']);
+                EpicItem item = EpicItem(rawEpic['name'], rawEpic['description'], rawEpic["status"]);
 
                 return ListTile(
                   title: item.buildTitle(context),
@@ -109,14 +109,19 @@ abstract class ListItem {
 class EpicItem implements ListItem {
   final String name;
   final String description;
+  final String status;
   // final List<String> body;
   // final List<String> body;
   // final List<String> body;
-  EpicItem(this.name, this.description);
+  EpicItem(this.name, this.description, this.status);
 
   @override
   Widget buildTitle(BuildContext context) => Text(name);
 
   @override
-  Widget buildSubtitle(BuildContext context) => Text(description);
+  Widget buildSubtitle(BuildContext context) => Text(description + ' ' + status);
+
+  @override
+  Widget buildStatus(BuildContext context) => Text(status);
+
 }

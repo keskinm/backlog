@@ -5,7 +5,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from bson.json_util import dumps
 
-from server.db.queries import get_status
+from server.db.queries import get_status, format_documents
 
 app = Flask(__name__)
 CORS(app)
@@ -39,6 +39,11 @@ def get_backlog():
         document["status"] = status[document["_id"]]
         r.append(document)
     return jsonify(r)
+
+@app.route('/api/get_formatted_backlog', methods=['GET'])
+def get_formatted_backlog():
+    r = format_documents()
+    return jsonify(dumps(r))
 
 app.secret_key = os.urandom(12)
 

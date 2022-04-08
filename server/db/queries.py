@@ -44,3 +44,26 @@ def get_status():
     for document in cursor:
         res.update({document["_id"]: get_epic_status(document)})
     return res
+
+
+def format_document(document):
+    formatted_document = {
+        document["name"]: {
+            "Tasks": [task["name"] for task in document["tasks"]],
+            "Bugs": [bug["name"] for bug in document["bugs"]],
+            "Epics": [epic["name"] for epic in document["epics"]]
+        }
+    }
+
+    return formatted_document
+
+
+def format_documents():
+    client = MongoClient(port=27017)
+    db = client.backlog_db
+    res = {}
+    epics_collection = db.epics
+    cursor = epics_collection.find({})
+    for document in cursor:
+        res.update(format_document(document))
+    return res

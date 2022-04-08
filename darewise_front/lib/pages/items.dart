@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:darewise_front/dio.dart';
 import 'package:dio/dio.dart';
 
-Future<List> justAGet(
-    {required String aString}) async {
+Future<List> getItems() async {
   Response response = await dioHttpGet(
     route: 'get_backlog',
     token: false,
   );
-  // print(response.data);
   return response.data;
 }
 
@@ -19,7 +17,7 @@ class Items extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    Future<List<dynamic>> items = justAGet(aString: '');
+    Future<List<dynamic>> items = getItems();
     const title = 'Mixed List';
 
     return MaterialApp(

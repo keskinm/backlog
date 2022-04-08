@@ -1,6 +1,8 @@
-import 'package:flutter/material.dart';
+import 'package:darewise_front/pages/formatted_backlog.dart';
 import 'package:darewise_front/pages/backlog.dart';
 import 'package:darewise_front/pages/items.dart';
+import 'package:flutter/material.dart';
+
 
 void main() {
   runApp(const MaterialApp(
@@ -26,7 +28,7 @@ class FirstRoute extends StatelessWidget {
             children: [
 
               ElevatedButton(
-                child: const Text('Backlogs'),
+                child: const Text('Backlog'),
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -41,6 +43,16 @@ class FirstRoute extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const Items()),
+                  );
+                },
+              ),
+
+              ElevatedButton(
+                child: const Text('Formatted Backlog'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FormattedBacklog()),
                   );
                 },
               ),

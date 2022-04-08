@@ -1,6 +1,7 @@
 import 'package:darewise_front/pages/formatted_backlog.dart';
 import 'package:darewise_front/pages/backlog.dart';
 import 'package:darewise_front/pages/items.dart';
+import 'package:darewise_front/pages/merge_backlog.dart';
 import 'package:flutter/material.dart';
 
 
@@ -48,11 +49,21 @@ class FirstRoute extends StatelessWidget {
               ),
 
               ElevatedButton(
-                child: const Text('Formatted Backlog'),
+                child: const Text('Export'),
                 onPressed: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const FormattedBacklog()),
+                  );
+                },
+              ),
+
+              ElevatedButton(
+                child: const Text('Merge Backlog'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const MergeBacklog()),
                   );
                 },
               ),

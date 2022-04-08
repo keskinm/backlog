@@ -1,3 +1,5 @@
+import uuid
+
 from pymongo import MongoClient
 
 work_in_progress = "Work in progress"
@@ -46,7 +48,7 @@ def get_status():
     return res
 
 
-def format_document(document):
+def dict_format_document(document):
     formatted_document = {
         document["name"]: {
             "Tasks": [task["name"] for task in document["tasks"]],
@@ -58,12 +60,77 @@ def format_document(document):
     return formatted_document
 
 
-def format_documents():
+def dict_format_documents():
     client = MongoClient(port=27017)
     db = client.backlog_db
     res = {}
     epics_collection = db.epics
     cursor = epics_collection.find({})
     for document in cursor:
-        res.update(format_document(document))
+        res.update(dict_format_document(document))
     return res
+
+
+def documents_format_dict(backlog_dict):
+    documents = []
+    for epic_name, epic in backlog_dict.items():
+        client = MongoClient(port=27017)
+        db = client.backlog_db
+        epics_collection = db.epics
+
+        if epics_collection.find_one({'name': epic_name}):
+            print("epic already exists in data base")
+
+        else:
+            tasks, bugs, epics = [], [], []
+            for task_name in epic["Tasks"]:
+                tasks.append({'name': task_name, 'description': ''})
+
+            for bug_name in epic["Bugs"]:
+                bugs.append({'name': bug_name, 'description': ''})
+
+            for sub_epic_name in epic["Epics"]:
+                epics.append({'name': sub_epic_name, 'description': ''})
+
+            doc_epic = {
+                '_id': str(uuid.uuid4()),
+                'name': epic_name,
+                'tasks': tasks,
+                'bugs': bugs,
+                'epics': epics,
+                'description': '',
+            }
+            documents.append(doc_epic)
+    return documents
+
+
+def link_to_merge_documents(partial_document_backlog):
+    client = MongoClient(port=27017)
+    db = client.backlog_db
+    epics_collection = db.epics
+    tasks_collection = db.tasks
+    bugs_collection = db.bugs
+
+    for document in partial_document_backlog:
+        link_id(document, "epics", epics_collection)
+        link_id(document, "tasks", tasks_collection)
+        link_id(document, "bugs", bugs_collection)
+
+
+def link_id(document, collection_name, collection):
+    for sub in document[collection_name]:
+        find_epic = collection.find_one({'name': sub['name']})
+        if find_epic:
+            sub["_id"] = find_epic["_id"]
+        else:
+            sub["_id"] = str(uuid.uuid4())
+
+
+def update_backlog(backlog):
+    client = MongoClient(port=27017)
+    db = client.backlog_db
+    epics_collection = db.epics
+
+    backlog = documents_format_dict(backlog)
+    link_to_merge_documents(backlog)
+    epics_collection.insert_many(backlog)

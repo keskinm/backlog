@@ -5,40 +5,33 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from bson.json_util import dumps
 
-from server.db.queries import get_status, \
-    dict_format_documents, \
-    update_backlog as _update_backlog, \
-    get_sub_tasks, \
-    get_bugs_epics as _get_bug_epics
+from server.db.queries import Queries
 
 app = Flask(__name__)
 CORS(app)
 
+q = Queries()
 
-# app.add_url_rule('/', view_func=m.root, methods=['POST', 'GET'])
-
-
-# @app.route('/')
-# def home():
-#     return "Home"
 
 @app.route('/api/get_stuff', methods=['POST'])
 def get_stuff():
     input_json = request.get_json(force=True)
     print('data from client:', input_json)
-    dictToReturn = {'answer':str(42)}
+    dictToReturn = {'answer': str(42)}
     return jsonify(dictToReturn)
+
 
 @app.route('/api/update_backlog', methods=['POST'])
 def update_backlog():
     input_json = request.get_json(force=True)
     print(input_json)
-    _update_backlog(input_json)
+    q.update_backlog(input_json)
     return jsonify({})
+
 
 @app.route('/api/get_backlog', methods=['GET'])
 def get_backlog():
-    status = get_status()
+    status = q.get_status()
     r = []
     client = MongoClient(port=27017)
     db = client.backlog_db
@@ -50,21 +43,24 @@ def get_backlog():
 
         sub_tasks = []
         for epic in document["epics"]:
-            sub_tasks += get_sub_tasks(epic, sub_tasks)
+            sub_tasks += q.get_sub_tasks(epic, sub_tasks)
         document["sub_tasks"] = ', '.join(sub_tasks)
 
         r.append(document)
     return jsonify(r)
 
+
 @app.route('/api/get_formatted_backlog', methods=['GET'])
 def get_formatted_backlog():
-    r = dict_format_documents()
+    r = q.dict_format_documents()
     return jsonify(dumps(r))
+
 
 @app.route('/api/get_bugs_epics', methods=['GET'])
 def get_bugs_epics():
-    r = _get_bug_epics()
+    r = q.get_bugs_epics()
     return jsonify(r)
+
 
 app.secret_key = os.urandom(12)
 

@@ -27,49 +27,46 @@ class Items extends StatelessWidget {
             title: const Text(title),
           ),
           body: FutureBuilder<List<dynamic>>(
-          future: items,
-          builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+            future: items,
+            builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+              Widget body;
 
-          print("0");
+              if (snapshot.hasData){
 
-            return Scaffold(body:
-            ListView.builder(
-              // Let the ListView know how many items it needs to build.
-              itemCount: snapshot.data!.length,
-              // Provide a builder function. This is where the magic happens.
-              // Convert each item into a widget based on the type of item it is.
 
-              itemBuilder: (context, index) {
-                final rawEpic = snapshot.data![index];
-                EpicItem item = EpicItem(rawEpic['name'], rawEpic['description'], rawEpic["status"]);
+                body = ListView.builder(
+                  // Let the ListView know how many items it needs to build.
+                  itemCount: snapshot.data!.length,
+                  // Provide a builder function. This is where the magic happens.
+                  // Convert each item into a widget based on the type of item it is.
 
-                return ListTile(
-                  title: item.buildTitle(context),
-                  subtitle: item.buildSubtitle(context),
+                  itemBuilder: (context, index) {
+                    final rawEpic = snapshot.data![index];
+                    EpicItem item = EpicItem(rawEpic['name'], rawEpic['description'], rawEpic["status"]);
+
+                    return ListTile(
+                      title: item.buildTitle(context),
+                      subtitle: item.buildSubtitle(context),
+                    );
+                  },
                 );
-              },
-              ),
-            );
 
-          },
+              }
 
-          // ListView.builder(
-          //   // Let the ListView know how many items it needs to build.
-          //   itemCount: items.length,
-          //   // Provide a builder function. This is where the magic happens.
-          //   // Convert each item into a widget based on the type of item it is.
-          //   itemBuilder: (context, index) {
-          //     final item = items[index];
-          //
-          //     return ListTile(
-          //       title: item.buildTitle(context),
-          //       subtitle: item.buildSubtitle(context),
-          //     );
-          //   },
-          // ),
+              else if (snapshot.hasError) {
+                body = Text('Error: ${snapshot.error}');
+              }
+
+              else {
+                body = Text('Awaiting result...');
+              }
+
+              return Scaffold(body: body);
 
 
-        )
+            },
+
+          )
 
       ),
     );

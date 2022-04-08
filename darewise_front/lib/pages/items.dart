@@ -42,12 +42,24 @@ class Items extends StatelessWidget {
 
                   itemBuilder: (context, index) {
                     final rawEpic = snapshot.data![index];
-                    EpicItem item = EpicItem(rawEpic['name'], rawEpic['description'], rawEpic["status"]);
 
                     return ListTile(
-                      title: item.buildTitle(context),
-                      subtitle: item.buildSubtitle(context),
+                      title: Text(rawEpic['name']),
+                      subtitle: ListTile(
+                        title: Text(rawEpic['description'] + ' | status: ' + rawEpic["status"]),
+                        subtitle: ListTile(
+                          title: Text('tasks: ' + rawEpic["tasks"] + '\n'),
+                          subtitle: ListTile(
+                            title: Text('sub_tasks: ' + rawEpic["sub_tasks"])
+                          ),
+                        ),
+                      ),
                     );
+
+                    // return ListTile(
+                    //   title: item.buildTitle(context),
+                    //   subtitle: item.buildSubtitle(context),
+                    // );
                   },
                 );
 
@@ -82,41 +94,3 @@ abstract class ListItem {
   Widget buildSubtitle(BuildContext context);
 }
 
-// /// A ListItem that contains data to display a heading.
-// class HeadingItem implements ListItem {
-//   final String heading;
-//
-//   HeadingItem(this.heading);
-//
-//   @override
-//   Widget buildTitle(BuildContext context) {
-//     return Text(
-//       heading,
-//       style: Theme.of(context).textTheme.headline5,
-//     );
-//   }
-//
-//   @override
-//   Widget buildSubtitle(BuildContext context) => const SizedBox.shrink();
-// }
-
-/// A ListItem that contains data to display a message.
-class EpicItem implements ListItem {
-  final String name;
-  final String description;
-  final String status;
-  // final List<String> body;
-  // final List<String> body;
-  // final List<String> body;
-  EpicItem(this.name, this.description, this.status);
-
-  @override
-  Widget buildTitle(BuildContext context) => Text(name);
-
-  @override
-  Widget buildSubtitle(BuildContext context) => Text(description + ' ' + status);
-
-  @override
-  Widget buildStatus(BuildContext context) => Text(status);
-
-}

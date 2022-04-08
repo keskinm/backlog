@@ -134,3 +134,12 @@ def update_backlog(backlog):
     backlog = documents_format_dict(backlog)
     link_to_merge_documents(backlog)
     epics_collection.insert_many(backlog)
+
+
+def get_sub_tasks(epic, sub_tasks):
+    for task in epic["tasks"]:
+        sub_tasks.append(task["name"])
+
+    for epic in epic["epics"]:
+        sub_tasks += get_sub_tasks(epic, sub_tasks)
+    return sub_tasks

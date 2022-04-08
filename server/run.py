@@ -5,7 +5,7 @@ from flask_cors import CORS
 from pymongo import MongoClient
 from bson.json_util import dumps
 
-from server.db.queries import get_status, dict_format_documents, update_backlog as _update_backlog
+from server.db.queries import get_status, dict_format_documents, update_backlog as _update_backlog, get_sub_tasks
 
 app = Flask(__name__)
 CORS(app)
@@ -41,9 +41,14 @@ def get_backlog():
     epics_collection = db.epics
     cursor = epics_collection.find({})
     for document in cursor:
-        # r.append(dumps(document))
-        print(status[document["_id"]])
         document["status"] = status[document["_id"]]
+        document["tasks"] = ', '.join([task["name"] for task in document["tasks"]])
+
+        sub_tasks = []
+        for epic in document["epics"]:
+            sub_tasks += get_sub_tasks(epic, sub_tasks)
+        document["sub_tasks"] = ', '.join(sub_tasks)
+
         r.append(document)
     return jsonify(r)
 

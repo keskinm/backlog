@@ -62,38 +62,33 @@ class _Backlog extends State<Backlog> {
 
                     final rawEpic = snapshot.data![index];
 
-                    return ListView(
-                        scrollDirection: Axis.vertical,
-                        shrinkWrap: true,
-                        children: <Widget>[
-                          Text(rawEpic['name']),
-                          Text(rawEpic['description'] + ' | status: ' + rawEpic["status"]),
-                          Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: <Widget>[
-                              TextField(
-                                controller: addController,
-                                decoration: const InputDecoration(hintText: 'Enter Task or Bug Name'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  addDocument(name: addController.text, collectionName: 'tasks',
-                                      epicId: rawEpic["_id"]);
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(rawEpic['name']),
+                        Text(rawEpic['description'] + ' | status: ' + rawEpic["status"]),
+                        TextField(
+                          controller: addController,
+                          decoration: const InputDecoration(hintText: 'Enter Task or Bug Name'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            addDocument(name: addController.text, collectionName: 'tasks',
+                                epicId: rawEpic["_id"]);
 
-                                },
-                                child: const Text('Add task'),
-                              ),
-                              ElevatedButton(
-                                onPressed: () {
-                                  addDocument(name: addController.text, collectionName: 'bugs',
-                                      epicId: rawEpic["_id"]);
+                          },
+                          child: const Text('Add task'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            addDocument(name: addController.text, collectionName: 'bugs',
+                                epicId: rawEpic["_id"]);
 
-                                },
-                                child: const Text('Add bug'),
-                              )
-                            ],
-                          )
-                        ]);
+                          },
+                          child: const Text('Add bug'),
+                        )
+                      ],
+                    );
 
                   },
                 );

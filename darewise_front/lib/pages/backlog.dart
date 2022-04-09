@@ -67,6 +67,25 @@ class _Backlog extends State<Backlog> {
                       children: <Widget>[
                         Text(rawEpic['name']),
                         Text(rawEpic['description'] + ' | status: ' + rawEpic["status"]),
+                        const Text('Bugs :'),
+                        ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: rawEpic['bugs'].length,
+                            itemBuilder: (context, bugsIndex) {
+                          final bug = rawEpic['bugs'][bugsIndex];
+                          return Text(bug['name'] + '\n');
+                        }),
+                        const Text('Tasks :'),
+                        ListView.builder(
+                            scrollDirection: Axis.vertical,
+                            shrinkWrap: true,
+                            itemCount: rawEpic['tasks'].length,
+                            itemBuilder: (context, bugsIndex) {
+                              final task = rawEpic['tasks'][bugsIndex];
+                              return Text(task['name'] + '\n');
+                            }),
+
                         TextField(
                           controller: addController,
                           decoration: const InputDecoration(hintText: 'Enter Task or Bug Name'),

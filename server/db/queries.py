@@ -15,15 +15,31 @@ class Queries:
         self.bugs_collection = self.db.bugs
         self.tasks_collection = self.db.tasks
 
+    def get_collection(self, collection_name):
+        return getattr(self, collection_name+'_collection', Exception(f"{collection_name} doesn't exist"))
+
     def add_document(self, query):
-        query['document']['_id'] = str(uuid.uuid4())
-        collection = getattr(self, query['collection_name']+'_collection')
-        collection.insert_one(query['document'])
-        self.epics_collection.update_one({'_id': query['epic_id']}, {'$push': {f"{query['collection_name']}": query["document"]}})
+        document = query['document']
+        document['_id'] = str(uuid.uuid4())
+        self.get_collection(query["collection_name"]).insert_one(document)
+        self.epics_collection.update_one({'_id': query['epic_id']}, {'$push': {f"{query['collection_name']}": document}})
 
     def delete_document(self, query):
-        collection = getattr(self, query['collection_name'])
-        collection.delete(query['delete_query'])
+        delete_query = query['delete_query']
+        collection_name = query['collection_name']
+        self.get_collection(collection_name).delete_one(delete_query)
+
+        to_pull_epics = self.epics_collection.find({f"{collection_name}.name": delete_query["name"]})
+        for epic in to_pull_epics:
+            check_function = lambda x: ("name" not in x) or x["name"] != delete_query["name"]
+            n = [v for v in epic[collection_name] if check_function(v)]
+            epic[collection_name] = n
+            self.epics_collection.replace_one({'_id': epic["_id"]}, epic)
+
+            """
+            Why this doesn't work? :
+            epic.update({'$pull': {f"{query['collection_name']}": {'$elemMatch': delete_query}}})
+            """
 
     @staticmethod
     def get_self_status(epic):

@@ -20,6 +20,15 @@ void addDocument(
   );
 }
 
+void deleteDocument(
+    {required String name, required String collectionName}) async {
+  String jsonData = '{"collection_name": "$collectionName", "delete_query": {"name": "$name"}}';
+  await dioHttpPost(
+    route: 'delete_document',
+    jsonData: jsonData,
+    token: false,
+  );
+}
 
 class Backlog extends StatefulWidget {
   const Backlog({Key? key}) : super(key: key);
@@ -118,15 +127,26 @@ class _Backlog extends State<Backlog> {
     );
   }
 
-  ListView buildDocumentsList(rawEpic, documentName) {
+  ListView buildDocumentsList(rawEpic, collectionName) {
     return ListView.builder(
-                          scrollDirection: Axis.vertical,
-                          shrinkWrap: true,
-                          itemCount: rawEpic[documentName].length,
-                          itemBuilder: (context, bugsIndex) {
-                        final bug = rawEpic[documentName][bugsIndex];
-                        return Text(bug['name'] + '\n');
-                      });
+        scrollDirection: Axis.vertical,
+        shrinkWrap: true,
+        itemCount: rawEpic[collectionName].length,
+        itemBuilder: (context, bugsIndex) {
+          final document = rawEpic[collectionName][bugsIndex];
+          String documentName = document['name'];
+          return Stack(
+            children: [
+              Text(documentName + '\n'),
+              ElevatedButton(
+                onPressed: () {
+                  deleteDocument(name: documentName, collectionName: collectionName);
+                },
+                child: const Text('Delete'),
+              )
+            ],
+          );
+        });
   }
 
 }

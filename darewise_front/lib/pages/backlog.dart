@@ -83,6 +83,14 @@ class _Backlog extends State<Backlog> {
                                 },
                                 child: const Text('Add task'),
                               ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  addDocument(name: addController.text, collectionName: 'bugs',
+                                      epicId: rawEpic["_id"]);
+
+                                },
+                                child: const Text('Add bug'),
+                              )
                             ],
                           )
                         ]);

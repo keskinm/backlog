@@ -140,6 +140,22 @@ class Queries:
 
         return linked_bugs
 
+    def get_epics_bugs(self):
+        r = []
+        cursor = self.epics_collection.find({})
+        for document in cursor:
+            document["bugs"] = ', '.join([bug["name"] for bug in document["bugs"]])
+
+            linked_bugs = []
+            for epic in document["epics"]:
+                linked_bugs += self.get_linked_bugs(epic, linked_bugs)
+            # @todo mystical bug here
+            linked_bugs = list(set(linked_bugs))
+            document["linked_bugs"] = ', '.join(linked_bugs)
+
+            r.append(document)
+        return r
+
     def get_bug_epics(self, bug):
         blocked_epics_non_higher = []
         blocked_epics_higher = []

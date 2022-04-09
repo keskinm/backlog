@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 
 Future<List> getItems() async {
   Response response = await dioHttpGet(
-    route: 'get_epic_bugs',
+    route: 'get_epics_bugs',
     token: false,
   );
   return response.data;

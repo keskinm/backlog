@@ -2,7 +2,6 @@ import os
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from pymongo import MongoClient
 from bson.json_util import dumps
 
 from server.db.queries import Queries
@@ -34,25 +33,9 @@ def get_backlog():
     return jsonify(q.get_backlog())
 
 
-@app.route('/api/get_epic_bugs', methods=['GET'])
-def get_epic_bugs():
-    r = []
-    client = MongoClient(port=27017)
-    db = client.backlog_db
-    epics_collection = db.epics
-    cursor = epics_collection.find({})
-    for document in cursor:
-        document["bugs"] = ', '.join([bug["name"] for bug in document["bugs"]])
-
-        linked_bugs = []
-        for epic in document["epics"]:
-            linked_bugs += q.get_linked_bugs(epic, linked_bugs)
-        # @todo mystical bug here
-        linked_bugs = list(set(linked_bugs))
-        document["linked_bugs"] = ', '.join(linked_bugs)
-
-        r.append(document)
-    return jsonify(r)
+@app.route('/api/get_epics_bugs', methods=['GET'])
+def get_epics_bugs():
+    return jsonify(q.get_epics_bugs())
 
 
 @app.route('/api/get_formatted_backlog', methods=['GET'])

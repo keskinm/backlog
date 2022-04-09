@@ -2,7 +2,6 @@ import 'package:darewise_front/pages/bugs_epics.dart';
 import 'package:darewise_front/pages/epics_bugs.dart';
 import 'package:darewise_front/pages/formatted_backlog.dart';
 import 'package:darewise_front/pages/backlog.dart';
-import 'package:darewise_front/pages/items.dart';
 import 'package:darewise_front/pages/merge_backlog.dart';
 import 'package:flutter/material.dart';
 
@@ -35,7 +34,7 @@ class FirstRoute extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Items()),
+                    MaterialPageRoute(builder: (context) => const Backlog()),
                   );
                 },
               ),

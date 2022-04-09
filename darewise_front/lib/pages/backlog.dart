@@ -2,130 +2,78 @@ import 'package:flutter/material.dart';
 import 'package:darewise_front/dio.dart';
 import 'package:dio/dio.dart';
 
-
-Future<String> justAPost(
-    {required String aString}) async {
-  String body = '{"aString": "$aString"}';
-  Response response = await dioHttpPost(
-    route: 'get_stuff',
-    jsonData: body,
+Future<List> getBacklog() async {
+  Response response = await dioHttpGet(
+    route: 'get_backlog',
     token: false,
   );
-  print(response.data);
-  return response.data['answer'];
+  return response.data;
 }
 
 
-
-
-// void main() => runApp(const MyApp());
-//
-// class MyApp extends StatelessWidget {
-//   const MyApp({Key? key}) : super(key: key);
-//
-//   static const String _title = 'Flutter Code Sample';
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return const MaterialApp(
-//       title: _title,
-//       home: Backlogs(),
-//     );
-//   }
-// }
-
-class Backlogs extends StatefulWidget {
-  const Backlogs({Key? key}) : super(key: key);
-
-  @override
-  State<Backlogs> createState() => _BacklogsState();
-}
-
-class _BacklogsState extends State<Backlogs> {
-  // final Future<String> _calculation = Future<String>.delayed(
-  //   const Duration(seconds: 2),
-  //       () => 'Data Loaded',
-  // );
-
-  final Future<String> _calculation = justAPost(aString: "foo");
+class Backlog extends StatelessWidget {
+  const Backlog({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
 
-      body: Container(
-        alignment: Alignment.center,
-        child: Column(
-          children: [
+    Future<List<dynamic>> items = getBacklog();
+    const title = 'Mixed List';
 
-        DefaultTextStyle(
-        style: Theme.of(context).textTheme.headline2!,
-        textAlign: TextAlign.center,
-        child: FutureBuilder<String>(
-          future: _calculation, // a previously-obtained Future<String> or null
-          builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-            List<Widget> children;
-            if (snapshot.hasData) {
-              children = <Widget>[
-                const Icon(
-                  Icons.check_circle_outline,
-                  color: Colors.green,
-                  size: 60,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Text('Result: ${snapshot.data}'),
-                )
-              ];
-            } else if (snapshot.hasError) {
-              children = <Widget>[
-                const Icon(
-                  Icons.error_outline,
-                  color: Colors.red,
-                  size: 60,
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 16),
-                  child: Text('Error: ${snapshot.error}'),
-                )
-              ];
-            } else {
-              children = const <Widget>[
-                SizedBox(
-                  width: 60,
-                  height: 60,
-                  child: CircularProgressIndicator(),
-                ),
-                Padding(
-                  padding: EdgeInsets.only(top: 16),
-                  child: Text('Awaiting result...'),
-                )
-              ];
-            }
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: children,
-              ),
-            );
-          },
-        ),
-      ),
+    return MaterialApp(
+      title: title,
+      home: Scaffold(
+          appBar: AppBar(
+            title: const Text(title),
+          ),
+          body: FutureBuilder<List<dynamic>>(
+            future: items,
+            builder: (BuildContext context, AsyncSnapshot<List<dynamic>> snapshot) {
+              Widget body;
+
+              if (snapshot.hasData){
 
 
+                body = ListView.builder(
+                  itemCount: snapshot.data!.length,
+                  itemBuilder: (context, index) {
+                    final rawEpic = snapshot.data![index];
 
-            ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('Go back!'),
-            ),
+                    return ListTile(
+                      title: Text(rawEpic['name']),
+                      subtitle: Text(rawEpic['description'] + ' | status: ' + rawEpic["status"])
+                    );
+                  },
+                );
 
-          ],
-        )
+              }
+
+              else if (snapshot.hasError) {
+                body = Text('Error: ${snapshot.error}');
+              }
+
+              else {
+                body = Text('Awaiting result...');
+              }
+
+              return Scaffold(body: body);
+
+
+            },
+
+          )
 
       ),
-
     );
   }
 }
+
+/// The base class for the different types of items the list can contain.
+abstract class ListItem {
+  /// The title line to show in a list item.
+  Widget buildTitle(BuildContext context);
+
+  /// The subtitle line, if any, to show in a list item.
+  Widget buildSubtitle(BuildContext context);
+}
+

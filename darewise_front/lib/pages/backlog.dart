@@ -73,7 +73,7 @@ class _Backlog extends State<Backlog> {
                             children: <Widget>[
                               TextField(
                                 controller: addController,
-                                decoration: const InputDecoration(hintText: 'Enter Task Name'),
+                                decoration: const InputDecoration(hintText: 'Enter Task or Bug Name'),
                               ),
                               ElevatedButton(
                                 onPressed: () {

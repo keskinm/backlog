@@ -1,4 +1,5 @@
 import 'package:darewise_front/pages/bugs_epics.dart';
+import 'package:darewise_front/pages/epics_bugs.dart';
 import 'package:darewise_front/pages/formatted_backlog.dart';
 import 'package:darewise_front/pages/backlog.dart';
 import 'package:darewise_front/pages/items.dart';
@@ -34,16 +35,6 @@ class FirstRoute extends StatelessWidget {
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const Backlogs()),
-                  );
-                },
-              ),
-
-              ElevatedButton(
-                child: const Text('Items'),
-                onPressed: () {
-                  Navigator.push(
-                    context,
                     MaterialPageRoute(builder: (context) => const Items()),
                   );
                 },
@@ -75,6 +66,16 @@ class FirstRoute extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const BugsEpics()),
+                  );
+                },
+              ),
+
+              ElevatedButton(
+                child: const Text('Epics bugs'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const EpicsBugs()),
                   );
                 },
               ),

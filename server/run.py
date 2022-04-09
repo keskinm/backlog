@@ -39,12 +39,25 @@ def get_backlog():
     cursor = epics_collection.find({})
     for document in cursor:
         document["status"] = status[document["_id"]]
-        document["tasks"] = ', '.join([task["name"] for task in document["tasks"]])
+        r.append(document)
+    return jsonify(r)
 
-        sub_tasks = []
+
+@app.route('/api/get_epic_bugs', methods=['GET'])
+def get_epic_bugs():
+    r = []
+    client = MongoClient(port=27017)
+    db = client.backlog_db
+    epics_collection = db.epics
+    cursor = epics_collection.find({})
+    for document in cursor:
+        document["bugs"] = ', '.join([bug["name"] for bug in document["bugs"]])
+
+        linked_bugs = []
         for epic in document["epics"]:
-            sub_tasks += q.get_sub_tasks(epic, sub_tasks)
-        document["sub_tasks"] = ', '.join(sub_tasks)
+            linked_bugs += q.get_linked_bugs(epic, linked_bugs)
+        linked_bugs = list(set(linked_bugs))
+        document["linked_bugs"] = ', '.join(linked_bugs)
 
         r.append(document)
     return jsonify(r)

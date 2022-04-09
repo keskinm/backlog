@@ -4,15 +4,15 @@ import 'package:dio/dio.dart';
 
 Future<List> getItems() async {
   Response response = await dioHttpGet(
-    route: 'get_backlog',
+    route: 'get_epic_bugs',
     token: false,
   );
   return response.data;
 }
 
 
-class Items extends StatelessWidget {
-  const Items({Key? key}) : super(key: key);
+class EpicsBugs extends StatelessWidget {
+  const EpicsBugs({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -44,14 +44,12 @@ class Items extends StatelessWidget {
                     final rawEpic = snapshot.data![index];
 
                     return ListTile(
-                      title: Text(rawEpic['name']),
-                      subtitle: Text(rawEpic['description'] + ' | status: ' + rawEpic["status"])
+                        title: Text(rawEpic['name']),
+                        subtitle: ListTile(
+                          title: Text('Bugs: ' + rawEpic['bugs'] + '\n'),
+                          subtitle: Text('Linked bugs: ' + rawEpic['linked_bugs']),
+                        )
                     );
-
-                    // return ListTile(
-                    //   title: item.buildTitle(context),
-                    //   subtitle: item.buildSubtitle(context),
-                    // );
                   },
                 );
 

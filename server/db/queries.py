@@ -118,13 +118,15 @@ class Queries:
         self.link_to_merge_documents(backlog)
         self.epics_collection.insert_many(backlog)
 
-    def get_sub_tasks(self, epic, sub_tasks):
-        for task in epic["tasks"]:
-            sub_tasks.append(task["name"])
+    def get_linked_bugs(self, epic, linked_bugs):
+        for bug in epic["bugs"]:
+            if bug not in linked_bugs:
+                linked_bugs.append(bug["name"])
 
-        for epic in epic["epics"]:
-            sub_tasks += self.get_sub_tasks(epic, sub_tasks)
-        return sub_tasks
+        for in_epic in epic["epics"]:
+            linked_bugs += self.get_linked_bugs(in_epic, linked_bugs)
+
+        return linked_bugs
 
     def get_bug_epics(self, bug):
         blocked_epics_non_higher = []

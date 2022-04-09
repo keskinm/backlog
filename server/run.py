@@ -56,6 +56,7 @@ def get_epic_bugs():
         linked_bugs = []
         for epic in document["epics"]:
             linked_bugs += q.get_linked_bugs(epic, linked_bugs)
+        # @todo mystical bug here
         linked_bugs = list(set(linked_bugs))
         document["linked_bugs"] = ', '.join(linked_bugs)
 
@@ -73,6 +74,20 @@ def get_formatted_backlog():
 def get_bugs_epics():
     r = q.get_bugs_epics()
     return jsonify(r)
+
+
+@app.route('/api/add_document', methods=['POST'])
+def add_document():
+    input_json = request.get_json(force=True)
+    q.add_document(input_json)
+    return jsonify({})
+
+
+@app.route('/api/delete_document', methods=['POST'])
+def delete_document():
+    input_json = request.get_json(force=True)
+    q.delete_document(input_json)
+    return jsonify({})
 
 
 app.secret_key = os.urandom(12)

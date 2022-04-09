@@ -15,6 +15,14 @@ class Queries:
         self.bugs_collection = self.db.bugs
         self.tasks_collection = self.db.tasks
 
+    def add_document(self, query):
+        collection = getattr(self, query['collection_name'])
+        collection.insert_one(query['document'])
+
+    def delete_document(self, query):
+        collection = getattr(self, query['collection_name'])
+        collection.delete(query['delete_query'])
+
     @staticmethod
     def get_self_status(epic):
         if epic["tasks"]:

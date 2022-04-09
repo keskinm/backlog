@@ -53,12 +53,14 @@ class Queries:
             res = complete
         return res
 
-    def get_status(self):
-        res = {}
+    def get_backlog(self):
+        res = []
 
         cursor = self.epics_collection.find({})
         for document in cursor:
-            res.update({document["_id"]: self.get_epic_status(document)})
+            document["status"] = self.get_epic_status(document)
+            res.append(document)
+
         return res
 
     @staticmethod

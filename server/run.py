@@ -31,16 +31,7 @@ def update_backlog():
 
 @app.route('/api/get_backlog', methods=['GET'])
 def get_backlog():
-    status = q.get_status()
-    r = []
-    client = MongoClient(port=27017)
-    db = client.backlog_db
-    epics_collection = db.epics
-    cursor = epics_collection.find({})
-    for document in cursor:
-        document["status"] = status[document["_id"]]
-        r.append(document)
-    return jsonify(r)
+    return jsonify(q.get_backlog())
 
 
 @app.route('/api/get_epic_bugs', methods=['GET'])

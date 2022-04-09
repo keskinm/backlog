@@ -68,24 +68,9 @@ class _Backlog extends State<Backlog> {
                         Text(rawEpic['name']),
                         Text(rawEpic['description'] + ' | status: ' + rawEpic["status"]),
                         const Text('Bugs :'),
-                        ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemCount: rawEpic['bugs'].length,
-                            itemBuilder: (context, bugsIndex) {
-                          final bug = rawEpic['bugs'][bugsIndex];
-                          return Text(bug['name'] + '\n');
-                        }),
+                        buildDocumentsList(rawEpic, 'bugs'),
                         const Text('Tasks :'),
-                        ListView.builder(
-                            scrollDirection: Axis.vertical,
-                            shrinkWrap: true,
-                            itemCount: rawEpic['tasks'].length,
-                            itemBuilder: (context, bugsIndex) {
-                              final task = rawEpic['tasks'][bugsIndex];
-                              return Text(task['name'] + '\n');
-                            }),
-
+                        buildDocumentsList(rawEpic, 'tasks'),
                         TextField(
                           controller: addController,
                           decoration: const InputDecoration(hintText: 'Enter Task or Bug Name'),
@@ -131,6 +116,17 @@ class _Backlog extends State<Backlog> {
 
       ),
     );
+  }
+
+  ListView buildDocumentsList(rawEpic, documentName) {
+    return ListView.builder(
+                          scrollDirection: Axis.vertical,
+                          shrinkWrap: true,
+                          itemCount: rawEpic[documentName].length,
+                          itemBuilder: (context, bugsIndex) {
+                        final bug = rawEpic[documentName][bugsIndex];
+                        return Text(bug['name'] + '\n');
+                      });
   }
 
 }

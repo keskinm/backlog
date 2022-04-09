@@ -16,8 +16,9 @@ class Queries:
         self.tasks_collection = self.db.tasks
 
     def add_document(self, query):
-        collection = getattr(self, query['collection_name'])
+        collection = getattr(self, query['collection_name']+'_collection')
         collection.insert_one(query['document'])
+        self.epics_collection.update_one({'_id': query['epic_id']}, {'$push': {f"{query['collection_name']}": query["document"]}})
 
     def delete_document(self, query):
         collection = getattr(self, query['collection_name'])

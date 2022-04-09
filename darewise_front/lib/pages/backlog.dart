@@ -11,8 +11,8 @@ Future<List> getBacklog() async {
 }
 
 void addDocument(
-    {required String name, required String collectionName}) async {
-  String jsonData = '{"collection_name": "$collectionName", "document": {"name": "$name"}}';
+    {required String name, required String collectionName, required String epicId}) async {
+  String jsonData = '{"collection_name": "$collectionName", "document": {"name": "$name"}, "epic_id": "$epicId"}';
   await dioHttpPost(
     route: 'add_document',
     jsonData: jsonData,
@@ -58,7 +58,7 @@ class _Backlog extends State<Backlog> {
 
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
-                    final TextEditingController _add_controller = TextEditingController();
+                    final TextEditingController addController = TextEditingController();
 
                     final rawEpic = snapshot.data![index];
 
@@ -72,13 +72,13 @@ class _Backlog extends State<Backlog> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: <Widget>[
                               TextField(
-                                controller: _add_controller,
+                                controller: addController,
                                 decoration: const InputDecoration(hintText: 'Enter Task Name'),
                               ),
                               ElevatedButton(
                                 onPressed: () {
-
-                                  addDocument(name: _add_controller.text, collectionName: 'tasks_collection');
+                                  addDocument(name: addController.text, collectionName: 'tasks',
+                                      epicId: rawEpic["_id"]);
 
                                 },
                                 child: const Text('Add task'),

@@ -5,6 +5,8 @@ import 'package:darewise_front/pages/backlog.dart';
 import 'package:darewise_front/pages/merge_backlog.dart';
 import 'package:flutter/material.dart';
 
+import 'dio.dart';
+
 
 void main() {
   runApp(const MaterialApp(
@@ -75,6 +77,16 @@ class FirstRoute extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (context) => const EpicsBugs()),
+                  );
+                },
+              ),
+
+              ElevatedButton(
+                child: const Text('Re-initialize database'),
+                onPressed: () async {
+                  await dioHttpGet(
+                      route: 'reinitialize_database',
+                      token: false,
                   );
                 },
               ),

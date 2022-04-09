@@ -64,6 +64,12 @@ def delete_document():
     return jsonify({})
 
 
+@app.route('/api/reinitialize_database', methods=['GET'])
+def reinitialize_database():
+    q.reinitialize_database()
+    return jsonify({})
+
+
 app.secret_key = os.urandom(12)
 
 if __name__ == '__main__':

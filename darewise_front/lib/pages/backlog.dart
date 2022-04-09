@@ -88,7 +88,7 @@ class _Backlog extends State<Backlog> {
                           onPressed: () {
                             addDocument(name: addController.text, collectionName: 'tasks',
                                 epicId: rawEpic["_id"]);
-
+                            setState(() {});
                           },
                           child: const Text('Add task'),
                         ),
@@ -96,7 +96,7 @@ class _Backlog extends State<Backlog> {
                           onPressed: () {
                             addDocument(name: addController.text, collectionName: 'bugs',
                                 epicId: rawEpic["_id"]);
-
+                            setState(() {});
                           },
                           child: const Text('Add bug'),
                         )
@@ -141,6 +141,7 @@ class _Backlog extends State<Backlog> {
               ElevatedButton(
                 onPressed: () {
                   deleteDocument(name: documentName, collectionName: collectionName);
+                  setState(() {});
                 },
                 child: const Text('Delete'),
               )

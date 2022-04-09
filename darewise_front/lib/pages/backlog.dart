@@ -10,15 +10,33 @@ Future<List> getBacklog() async {
   return response.data;
 }
 
+void addDocument(
+    {required String name, required String collectionName}) async {
+  String jsonData = '{"collection_name": "$collectionName", "document": {"name": "$name"}}';
+  await dioHttpPost(
+    route: 'add_document',
+    jsonData: jsonData,
+    token: false,
+  );
+}
 
-class Backlog extends StatelessWidget {
+
+class Backlog extends StatefulWidget {
   const Backlog({Key? key}) : super(key: key);
 
+
+  @override
+  State<StatefulWidget> createState() {
+    return _Backlog();
+  }
+}
+
+class _Backlog extends State<Backlog> {
   @override
   Widget build(BuildContext context) {
 
     Future<List<dynamic>> items = getBacklog();
-    const title = 'Mixed List';
+    const title = 'Backlog';
 
     return MaterialApp(
       title: title,
@@ -35,14 +53,40 @@ class Backlog extends StatelessWidget {
 
 
                 body = ListView.builder(
+                  scrollDirection: Axis.vertical,
+                  shrinkWrap: true,
+
                   itemCount: snapshot.data!.length,
                   itemBuilder: (context, index) {
+                    final TextEditingController _add_controller = TextEditingController();
+
                     final rawEpic = snapshot.data![index];
 
-                    return ListTile(
-                      title: Text(rawEpic['name']),
-                      subtitle: Text(rawEpic['description'] + ' | status: ' + rawEpic["status"])
-                    );
+                    return ListView(
+                        scrollDirection: Axis.vertical,
+                        shrinkWrap: true,
+                        children: <Widget>[
+                          Text(rawEpic['name']),
+                          Text(rawEpic['description'] + ' | status: ' + rawEpic["status"]),
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: <Widget>[
+                              TextField(
+                                controller: _add_controller,
+                                decoration: const InputDecoration(hintText: 'Enter Task Name'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+
+                                  addDocument(name: _add_controller.text, collectionName: 'tasks_collection');
+
+                                },
+                                child: const Text('Add task'),
+                              ),
+                            ],
+                          )
+                        ]);
+
                   },
                 );
 
@@ -66,6 +110,7 @@ class Backlog extends StatelessWidget {
       ),
     );
   }
+
 }
 
 /// The base class for the different types of items the list can contain.

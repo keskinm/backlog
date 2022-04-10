@@ -153,5 +153,5 @@ Tests
 
 --------
 
-Retourner "ok"/afficher checks verts (dynamique) 
+Make the app more dynamic (acknowledges) 
 

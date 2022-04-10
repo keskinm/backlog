@@ -16,25 +16,36 @@ class Queries:
         self.tasks_collection = self.db.tasks
 
     def get_collection(self, collection_name):
-        return getattr(self, collection_name+'_collection', Exception(f"{collection_name} doesn't exist"))
+        return getattr(
+            self,
+            collection_name + "_collection",
+            Exception(f"{collection_name} doesn't exist"),
+        )
 
     def add_document(self, query):
-        document = query['document']
-        document['_id'] = str(uuid.uuid4())
+        document = query["document"]
+        document["_id"] = str(uuid.uuid4())
         self.get_collection(query["collection_name"]).insert_one(document)
-        self.epics_collection.update_one({'_id': query['epic_id']}, {'$push': {f"{query['collection_name']}": document}})
+        self.epics_collection.update_one(
+            {"_id": query["epic_id"]},
+            {"$push": {f"{query['collection_name']}": document}},
+        )
 
     def delete_document(self, query):
-        delete_query = query['delete_query']
-        collection_name = query['collection_name']
+        delete_query = query["delete_query"]
+        collection_name = query["collection_name"]
         self.get_collection(collection_name).delete_one(delete_query)
 
-        to_pull_epics = self.epics_collection.find({f"{collection_name}.name": delete_query["name"]})
+        to_pull_epics = self.epics_collection.find(
+            {f"{collection_name}.name": delete_query["name"]}
+        )
         for epic in to_pull_epics:
-            check_function = lambda x: ("name" not in x) or x["name"] != delete_query["name"]
+            check_function = (
+                lambda x: ("name" not in x) or x["name"] != delete_query["name"]
+            )
             n = [v for v in epic[collection_name] if check_function(v)]
             epic[collection_name] = n
-            self.epics_collection.replace_one({'_id': epic["_id"]}, epic)
+            self.epics_collection.replace_one({"_id": epic["_id"]}, epic)
 
             """
             Why this doesn't work? :
@@ -85,7 +96,7 @@ class Queries:
             document["name"]: {
                 "Tasks": [task["name"] for task in document["tasks"]],
                 "Bugs": [bug["name"] for bug in document["bugs"]],
-                "Epics": [epic["name"] for epic in document["epics"]]
+                "Epics": [epic["name"] for epic in document["epics"]],
             }
         }
 
@@ -101,27 +112,27 @@ class Queries:
     def documents_format_dict(self, backlog_dict):
         documents = []
         for epic_name, epic in backlog_dict.items():
-            if self.epics_collection.find_one({'name': epic_name}):
+            if self.epics_collection.find_one({"name": epic_name}):
                 print("epic already exists in data base")
 
             else:
                 tasks, bugs, epics = [], [], []
                 for task_name in epic["Tasks"]:
-                    tasks.append({'name': task_name, 'description': ''})
+                    tasks.append({"name": task_name, "description": ""})
 
                 for bug_name in epic["Bugs"]:
-                    bugs.append({'name': bug_name, 'description': ''})
+                    bugs.append({"name": bug_name, "description": ""})
 
                 for sub_epic_name in epic["Epics"]:
-                    epics.append({'name': sub_epic_name, 'description': ''})
+                    epics.append({"name": sub_epic_name, "description": ""})
 
                 doc_epic = {
-                    '_id': str(uuid.uuid4()),
-                    'name': epic_name,
-                    'tasks': tasks,
-                    'bugs': bugs,
-                    'epics': epics,
-                    'description': '',
+                    "_id": str(uuid.uuid4()),
+                    "name": epic_name,
+                    "tasks": tasks,
+                    "bugs": bugs,
+                    "epics": epics,
+                    "description": "",
                 }
                 documents.append(doc_epic)
         return documents
@@ -135,7 +146,7 @@ class Queries:
     @staticmethod
     def link_id(document, collection_name, collection):
         for sub in document[collection_name]:
-            find_epic = collection.find_one({'name': sub['name']})
+            find_epic = collection.find_one({"name": sub["name"]})
             if find_epic:
                 sub["_id"] = find_epic["_id"]
             else:
@@ -160,14 +171,14 @@ class Queries:
         r = []
         cursor = self.epics_collection.find({})
         for document in cursor:
-            document["bugs"] = ', '.join([bug["name"] for bug in document["bugs"]])
+            document["bugs"] = ", ".join([bug["name"] for bug in document["bugs"]])
 
             linked_bugs = []
             for epic in document["epics"]:
                 linked_bugs += self.get_linked_bugs(epic, linked_bugs)
             # @todo mystical bug here
             linked_bugs = list(set(linked_bugs))
-            document["linked_bugs"] = ', '.join(linked_bugs)
+            document["linked_bugs"] = ", ".join(linked_bugs)
 
             r.append(document)
         return r
@@ -176,17 +187,24 @@ class Queries:
         blocked_epics_non_higher = []
         blocked_epics_higher = []
 
-        blocked_epics = self.epics_collection.find({'bugs.name': {'$all': [bug["name"]]}})
+        blocked_epics = self.epics_collection.find(
+            {"bugs.name": {"$all": [bug["name"]]}}
+        )
         for blocked_epic in blocked_epics:
-            if not list(self.epics_collection.find({'epics': {'$all': [blocked_epic["name"]]}})):
+            if not list(
+                self.epics_collection.find({"epics": {"$all": [blocked_epic["name"]]}})
+            ):
                 blocked_epics_higher.append(blocked_epic["name"])
             else:
                 blocked_epics_non_higher.append(blocked_epic["name"])
 
-        blocked_epics_higher = ', '.join(blocked_epics_higher)
-        blocked_epics_non_higher = ', '.join(blocked_epics_non_higher)
+        blocked_epics_higher = ", ".join(blocked_epics_higher)
+        blocked_epics_non_higher = ", ".join(blocked_epics_non_higher)
 
-        res = {'blocked_epics_higher': blocked_epics_higher, 'blocked_epics_non_higher': blocked_epics_non_higher}
+        res = {
+            "blocked_epics_higher": blocked_epics_higher,
+            "blocked_epics_non_higher": blocked_epics_non_higher,
+        }
 
         return res
 
@@ -201,48 +219,82 @@ class Queries:
     def reinitialize_database(self):
         self.db.command("dropDatabase")
 
-        task_A1 = {'_id': str(uuid.uuid4()), 'description': 'task A1 description', 'name': 'task A1'}
-        task_A2 = {'_id': str(uuid.uuid4()), 'description': 'task A2 description', 'name': 'task A2'}
-        task_B1 = {'_id': str(uuid.uuid4()), 'description': 'task B1 description', 'name': 'task B1'}
-        task_B2 = {'_id': str(uuid.uuid4()), 'description': 'task B2 description', 'name': 'task B2'}
+        task_A1 = {
+            "_id": str(uuid.uuid4()),
+            "description": "task A1 description",
+            "name": "task A1",
+        }
+        task_A2 = {
+            "_id": str(uuid.uuid4()),
+            "description": "task A2 description",
+            "name": "task A2",
+        }
+        task_B1 = {
+            "_id": str(uuid.uuid4()),
+            "description": "task B1 description",
+            "name": "task B1",
+        }
+        task_B2 = {
+            "_id": str(uuid.uuid4()),
+            "description": "task B2 description",
+            "name": "task B2",
+        }
 
-        bug_B1 = {'_id': str(uuid.uuid4()), 'description': 'bug B1 description', 'name': 'bug B1'}
-        bug_E1 = {'_id': str(uuid.uuid4()), 'description': 'bug B1 description', 'name': 'bug E1'}
+        bug_B1 = {
+            "_id": str(uuid.uuid4()),
+            "description": "bug B1 description",
+            "name": "bug B1",
+        }
+        bug_E1 = {
+            "_id": str(uuid.uuid4()),
+            "description": "bug B1 description",
+            "name": "bug E1",
+        }
 
-        epic_B = {'_id': str(uuid.uuid4()),
-                  'name': 'B',
-                  'description': 'Epic B description',
-                  'epics': [],
-                  'tasks': [task_B1, task_B2],
-                  'bugs': [bug_B1]}
+        epic_B = {
+            "_id": str(uuid.uuid4()),
+            "name": "B",
+            "description": "Epic B description",
+            "epics": [],
+            "tasks": [task_B1, task_B2],
+            "bugs": [bug_B1],
+        }
 
-        epic_A = {'_id': str(uuid.uuid4()),
-                  'name': 'A',
-                  'description': 'Epic A description',
-                  'epics': [epic_B],
-                  'tasks': [task_A1, task_A2],
-                  'bugs': []}
+        epic_A = {
+            "_id": str(uuid.uuid4()),
+            "name": "A",
+            "description": "Epic A description",
+            "epics": [epic_B],
+            "tasks": [task_A1, task_A2],
+            "bugs": [],
+        }
 
-        epic_C = {'_id': str(uuid.uuid4()),
-                  'name': 'C',
-                  'description': 'Epic C description',
-                  'epics': [],
-                  'tasks': [],
-                  'bugs': []}
+        epic_C = {
+            "_id": str(uuid.uuid4()),
+            "name": "C",
+            "description": "Epic C description",
+            "epics": [],
+            "tasks": [],
+            "bugs": [],
+        }
 
-        epic_D = {'_id': str(uuid.uuid4()),
-                  'name': 'D',
-                  'description': 'Epic D description',
-                  'epics': [epic_C],
-                  'tasks': [],
-                  'bugs': []}
+        epic_D = {
+            "_id": str(uuid.uuid4()),
+            "name": "D",
+            "description": "Epic D description",
+            "epics": [epic_C],
+            "tasks": [],
+            "bugs": [],
+        }
 
-        epic_E = {'_id': str(uuid.uuid4()),
-                  'name': 'E',
-                  'description': 'Epic E description',
-                  'epics': [],
-                  'tasks': [],
-                  'bugs': [bug_E1]}
+        epic_E = {
+            "_id": str(uuid.uuid4()),
+            "name": "E",
+            "description": "Epic E description",
+            "epics": [],
+            "tasks": [],
+            "bugs": [bug_E1],
+        }
 
         self.epics_collection.insert_many([epic_A, epic_B, epic_C, epic_D, epic_E])
         self.tasks_collection.insert_many([task_A1, task_A2, task_B1, task_B2])

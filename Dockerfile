@@ -7,12 +7,10 @@ RUN apt-get update &&\
     wget -qO - https://www.mongodb.org/static/pgp/server-5.0.asc | apt-key add - &&\
     echo "deb [ arch=amd64,arm64 ] https://repo.mongodb.org/apt/ubuntu focal/mongodb-org/5.0 multiverse" | tee /etc/apt/sources.list.d/mongodb-org-5.0.list &&\
     apt-get install -y mongodb &&\
-    service mongodb start &&\
     apt install -y python3-pip
 COPY . work
 RUN cd work &&\
-    pip3 install -r requirements.txt &&\
-    python3 -m server.db.init
+    pip3 install -r requirements.txt
 
 WORKDIR /work
 

@@ -96,13 +96,17 @@ addressed in further development if this was a true product.
 
 In the README.md directory: 
 
-`shell
-docker run -it -p 8000:8000 server
+`
+docker build -t server .
+`
+
+`
+docker run -p 8000:8000 server
 `
 
 or
 
-`shell
+`
 docker-compose up
 `
 

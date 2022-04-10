@@ -12,18 +12,9 @@ CORS(app)
 q = Queries()
 
 
-@app.route('/api/get_stuff', methods=['POST'])
-def get_stuff():
-    input_json = request.get_json(force=True)
-    print('data from client:', input_json)
-    dictToReturn = {'answer': str(42)}
-    return jsonify(dictToReturn)
-
-
 @app.route('/api/update_backlog', methods=['POST'])
 def update_backlog():
     input_json = request.get_json(force=True)
-    print(input_json)
     q.update_backlog(input_json)
     return jsonify({})
 

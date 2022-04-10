@@ -1,12 +1,5 @@
 FROM ubuntu:20.04
 
-
-# apt-get install -y mongodb-org &&\
-# systemctl daemon-reload &&\
-# systemctl start mongod &&\
-# service mongod start &&\
-
-
 COPY . work
 
 
@@ -25,7 +18,7 @@ RUN apt-get update &&\
 
 WORKDIR /work
 
-CMD ["python3", "-m", "server.run"]
+CMD ["sh", "start_server.sh"]
 
 
 

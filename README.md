@@ -123,7 +123,7 @@ docker-compose up
 
 
 `
-cd darewise_front
+cd front
 `
 
 `

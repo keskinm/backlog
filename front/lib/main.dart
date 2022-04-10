@@ -1,8 +1,8 @@
-import 'package:darewise_front/pages/bugs_epics.dart';
-import 'package:darewise_front/pages/epics_bugs.dart';
-import 'package:darewise_front/pages/formatted_backlog.dart';
-import 'package:darewise_front/pages/backlog.dart';
-import 'package:darewise_front/pages/merge_backlog.dart';
+import 'package:front/pages/bugs_epics.dart';
+import 'package:front/pages/epics_bugs.dart';
+import 'package:front/pages/formatted_backlog.dart';
+import 'package:front/pages/backlog.dart';
+import 'package:front/pages/merge_backlog.dart';
 import 'package:flutter/material.dart';
 
 import 'dio.dart';

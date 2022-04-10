@@ -1,6 +1,6 @@
 {
-    "name": "darewise_front",
-    "short_name": "darewise_front",
+    "name": "front",
+    "short_name": "front",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

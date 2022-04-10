@@ -1,24 +1,24 @@
 import 'package:flutter/material.dart';
-import 'package:darewise_front/dio.dart';
+import 'package:front/dio.dart';
 import 'package:dio/dio.dart';
 
-Future<List> getItems() async {
+Future<List> getBugs() async {
   Response response = await dioHttpGet(
-    route: 'get_epics_bugs',
+    route: 'get_bugs_epics',
     token: false,
   );
   return response.data;
 }
 
 
-class EpicsBugs extends StatelessWidget {
-  const EpicsBugs({Key? key}) : super(key: key);
+class BugsEpics extends StatelessWidget {
+  const BugsEpics({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
-    Future<List<dynamic>> items = getItems();
-    const title = 'Mixed List';
+    Future<List<dynamic>> items = getBugs();
+    const title = 'All epics blocked by a bug';
 
     return MaterialApp(
       title: title,
@@ -44,12 +44,19 @@ class EpicsBugs extends StatelessWidget {
                     final rawEpic = snapshot.data![index];
 
                     return ListTile(
-                        title: Text(rawEpic['name']),
+                      title: Text(rawEpic['name']),
+                      subtitle: ListTile(
+                        title: Text('High level blocked epics: ' + rawEpic["blocked_epics"]["blocked_epics_higher"] + '\n'),
                         subtitle: ListTile(
-                          title: Text('Bugs: ' + rawEpic['bugs'] + '\n'),
-                          subtitle: Text('Linked bugs: ' + rawEpic['linked_bugs']),
-                        )
+                          title: Text('Blocked epics: ' + rawEpic["blocked_epics"]["blocked_epics_non_higher"]),
+                        ),
+                      ),
                     );
+
+                    // return ListTile(
+                    //   title: item.buildTitle(context),
+                    //   subtitle: item.buildSubtitle(context),
+                    // );
                   },
                 );
 

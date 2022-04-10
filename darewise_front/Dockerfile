@@ -1,3 +1,4 @@
+#Stage 1 - Install dependencies and build the app
 FROM ubuntu:20.04
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -15,3 +16,7 @@ RUN cd /work &&\
     flutter pub upgrade &&\
     flutter pub get &&\
     flutter build web
+
+# Stage 2 - Create the run-time image
+FROM nginx:1.21.1-alpine
+COPY --from=build-env /app/build/web /usr/share/nginx/html

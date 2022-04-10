@@ -143,13 +143,10 @@ flutter pub get`
 
 Connect with the front end Docker
 
---------
-
-Format/comment code 
 
 --------
 
-Tests
+Tests/comment
 
 --------
 

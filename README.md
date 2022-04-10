@@ -153,10 +153,5 @@ Tests
 
 --------
 
-espacer widgets dans main
-
-
---------
-
 Retourner "ok"/afficher checks verts (dynamique) 
 

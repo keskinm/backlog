@@ -28,7 +28,8 @@ class FirstRoute extends StatelessWidget {
 
       body: Container(
         alignment: Alignment.center,
-        child: Column(
+        child: Wrap(
+            spacing: 100,
             children: [
 
               ElevatedButton(

@@ -90,6 +90,15 @@ choices you made, what are the issues of the current implementation and how they
 addressed in further development if this was a true product.
 
 
+## Used techno: 
+### Front: Flutter (Dart): 
+An efficient langage to develop cross platform applications for Android, 
+iOS, Linux, macOS, Windows, Google Fuchsia, and the web from a single 
+codebase. 
+
+### Back: Flask + Mongodb:
+Flask as a quick-setup and efficient micro web framework.
+
 ## HOW TO RUN: 
 
 ### Execute first the server.
@@ -110,27 +119,44 @@ or
 docker-compose up
 `
 
-## TODOS: 
+### Execute flutter app:
+
+Install flutter: https://docs.flutter.dev/get-started/install
+Then simply:
+
+`
+cd darewise_front
+`
+
+`
+flutter pub upgrade`
+
+`
+flutter pub get`
+
+`flutter run
+`
+
+
+
+#### TODOS: 
+
+Connect with the front end Docker
+
+--------
+
 Format/comment code 
 
 --------
 
-tests
+Tests
 
 --------
 
-espacer widgets dans main?
+espacer widgets dans main
 
 
 --------
 
 Retourner "ok"/afficher checks verts (dynamique) 
 
---------
-
-Compléter README.md
-
---------
-
-
-Debug "bug mystique" 

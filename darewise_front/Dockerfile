@@ -10,5 +10,8 @@ RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.d
 RUN apt-get -y install xdg-utils libxss1 libxkbcommon0 libnss3 libnspr4 libgtk-3-0 libgbm1 libatspi2.0-0 libatk-bridge2.0-0 libasound2 fonts-liberation
 RUN dpkg -i google-chrome-stable_current_amd64.deb
 COPY . work
-RUN cd /work
-RUN export PATH="$PATH:/flutter/bin" && flutter pub upgrade && flutter pub get && flutter build web
+RUN cd /work &&\
+    export PATH="$PATH:/flutter/bin" &&\
+    flutter pub upgrade &&\
+    flutter pub get &&\
+    flutter build web

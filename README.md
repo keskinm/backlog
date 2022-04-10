@@ -121,30 +121,27 @@ docker-compose up
 
 ### Execute flutter app:
 
-Install flutter: https://docs.flutter.dev/get-started/install
-Then simply:
 
 `
 cd darewise_front
 `
 
 `
-flutter pub upgrade`
+docker build -t front .
+`
+The flutter cloning could take some time.
+
+Then:
 
 `
-flutter pub get`
-
-`flutter run
+docker run -d -p 1200:80 front
 `
+
+You can now go on your browser (tested with Chrome) at the url:  http://localhost:1200/
 
 
 
 #### TODOS: 
-
-Connect with the front end Docker
-
-
---------
 
 Tests/comment
 
